@@ -1,40 +1,35 @@
-import React from 'react';
-import './App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <h1>Welcome to Pitchforge</h1>
-
-      {/* Other sections here */}
-
-      {/* PRICING PAGE section start */}
-      <section>
-        <h2>Pricing</h2>
-        <p>Our pricing options are flexible to meet your needs.</p>
-        <ul>
-          <li>
-            <h3>Basic Plan - $10/month</h3>
-            <p>Access to basic features.</p>
-          </li>
-          <li>
-            <h3>Pro Plan - $30/month</h3>
-            <p>Access to all features and priority support.</p>
-          </li>
-          <li>
-            <h3>Premium Plan - $50/month</h3>
-            <p>All features plus additional perks.</p>
-          </li>
-          <li>
-            <h3>USDT TRC20 Payment Option</h3>
-            <p>Pay with USDT TRC20 and get a 10% discount on your first subscription!</p>
-            <p>Please contact our support to set up your USDT payment.</p>
-          </li>
-        </ul>
-      </section>
-      {/* PRICING PAGE section end */}
+{/* PRICING PAGE */}
+{page === "pricing" && (
+  <div>
+    <h2>Pricing Plans</h2>
+    <div className="plan-card">
+      <h3>Basic Plan</h3>
+      <p>$10/month</p>
+      <button onClick={() => handlePayment('Basic')}>Buy Now</button>
     </div>
-  );
-}
-
-export default App;
+    <div className="plan-card">
+      <h3>Pro Plan</h3>
+      <p>$20/month</p>
+      <button onClick={() => handlePayment('Pro')}>Buy Now</button>
+    </div>
+    <div className="plan-card">
+      <h3>Premium Plan</h3>
+      <p>$30/month</p>
+      <button onClick={() => handlePayment('Premium')}>Buy Now</button>
+    </div>
+    {/* USDT TRC20 Payment Section */}
+    <div className="crypto-payment">
+      <h3>Pay with USDT (TRC20)</h3>
+      <p>Wallet Address: TUY6KhFdgP3CFP7vFH3ejYdD9tLrVBU764</p>
+      <p>Follow these steps for payment:</p>
+      <ol>
+        <li>Open your crypto wallet app.</li>
+        <li>Select Send and enter the wallet address.</li>
+        <li>Input the amount you want to pay.</li>
+        <li>Confirm the transaction.</li>
+      </ol>
+      <button onClick={() => copyToClipboard('TUY6KhFdgP3CFP7vFH3ejYdD9tLrVBU764')}>Copy Wallet Address</button>
+      <p className="warning">Ensure the wallet address is correct to avoid loss of funds.</p>
+    </div>
+  </div>
+)}
