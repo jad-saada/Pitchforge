@@ -50,29 +50,31 @@ export default function PitchForge() {
       setShowPaywall(true);
       return;
     }
-    const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      setError("API key not configured. Please set VITE_ANTHROPIC_API_KEY in your .env file.");
-      return;
-    }
-
     setError("");
     setLoading(true);
     setResults(null);
 
-    const systemPrompt = `You are PitchForge, an expert cold outreach copywriter. You write highly personalized, concise, and compelling ${channel === "email" ? "cold emails" : "cold DMs"} that get replies. \nGenerate exactly 3 distinct pitch variations. Each should have a different angle/hook.\nRespond ONLY with valid JSON in this exact format:\n{\n  \"pitches\": [\n    { \"label\": \"The Problem-First\", \"subject\": \"...\", \"body\": \"...\" },\n    { \"label\": \"The Social Proof\", \"subject\": \"...\", \"body\": \"...\" },\n    { \"label\": \"The Curiosity Hook\", \"subject\": \"...\", \"body\": \"...\" }\n  ]\n}\n${channel === "dm" ? "For DMs: skip the subject field (set it to null). Keep body under 120 words." : "For emails: include subject line. Keep body under 180 words."}\nTone: ${tone}. Make each pitch feel human, not AI-written. No clichés like 'I hope this finds you well'.`;
+    const systemPrompt = `You are PitchForge, an expert cold outreach copywriter. You write highly personalized, concise, and compelling ${channel === "email" ? "cold emails" : "cold DMs"} that get replies. 
+Generate exactly 3 distinct pitch variations. Each should have a different angle/hook.
+Respond ONLY with valid JSON in this exact format:
+{
+  "pitches": [
+    { "label": "The Problem-First", "subject": "...", "body": "..." },
+    { "label": "The Social Proof", "subject": "...", "body": "..." },
+    { "label": "The Curiosity Hook", "subject": "...", "body": "..." }
+  ]
+}
+${channel === "dm" ? "For DMs: skip the subject field (set it to null). Keep body under 120 words." : "For emails: include subject line. Keep body under 180 words."}
+Tone: ${tone}. Make each pitch feel human, not AI-written. No clichés like 'I hope this finds you well'.`;
 
-    const userPrompt = `My service/offer: ${service}\nProspect info: ${prospect}\nGenerate 3 personalized ${channel === "email" ? "cold email" : "cold DM"} pitches.`;
+    const userPrompt = `My service/offer: ${service}
+Prospect info: ${prospect}
+Generate 3 personalized ${channel === "email" ? "cold email" : "cold DM"} pitches.`;
 
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
           max_tokens: 1000,
@@ -100,7 +102,7 @@ export default function PitchForge() {
     setTimeout(() => setCopied(null), 2000);
   }
 
-  const tones = ["professional", "casual", "bold", "friendly"];  
+  const tones = ["professional", "casual", "bold", "friendly"];
   const channels = [
     { id: "email", icon: "✉️", label: "Cold Email" },
     { id: "dm", icon: "💬", label: "Cold DM" }
@@ -334,7 +336,7 @@ export default function PitchForge() {
           <p style={{ color: "#6b7280", marginBottom: "40px", fontSize: "14px" }}>
             The average freelancer closes 1 extra client every month using PitchForge.<br />That client is worth $500–$5,000. Do the math.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "40px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "32px" }}>
             {PLANS.map((plan, i) => (
               <div key={i} style={{
                 background: plan.highlight ? "linear-gradient(135deg, #2563eb12, #7c3aed12)" : "#0d0f18",
@@ -343,18 +345,131 @@ export default function PitchForge() {
                 position: "relative"
               }}>
                 {plan.highlight && (
-                  <div style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: "linear-gradient(90deg, #2563eb, #7c3aed)", color: "#fff", fontSize: "10px", fontWeight: "700", padding: "3px 10px", borderRadius: "20px", fontFamily: "'DM Mono'" }}>MOST POPULAR</div>
+                  <div style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg, #2563eb, #7c3aed)", borderRadius: "20px", padding: "3px 12px", fontSize: "10px", fontWeight: "700", color: "#fff", whiteSpace: "nowrap" }}>
+                    MOST POPULAR
+                  </div>
                 )}
-                <div style={{ fontSize: "32px", fontWeight: "800", marginBottom: "2px" }}>{plan.price}<span style={{ fontSize: "16px", color: "#6b7280" }}>{plan.period}</span></div>
-                <div style={{ fontSize: "13px", color: "#6b7280", marginBottom: "18px" }}>{plan.name}</div>
-                <div style={{ fontSize: "12px", color: "#a78bfa", marginBottom: "24px", fontWeight: "600" }}>{plan.credits}</div>
-                <button style={{ width: "100%", padding: "10px", borderRadius: "10px", background: plan.highlight ? "linear-gradient(135deg, #2563eb, #7c3aed)" : "#ffffff08", color: plan.highlight ? "#fff" : "#a78bfa", border: `1px solid ${plan.highlight ? "#2563eb50" : "#ffffff15"}`, fontSize: "13px", fontWeight: "700", cursor: "pointer", fontFamily: "inherit" }}>{plan.cta}</button>
+                <div style={{ fontWeight: "700", color: "#9ca3af", fontSize: "12px", letterSpacing: "1.5px", marginBottom: "12px", fontFamily: "'DM Mono'" }}>{plan.name.toUpperCase()}</div>
+                <div style={{ fontWeight: "800", fontSize: "36px", letterSpacing: "-1.5px", marginBottom: "4px" }}>
+                  {plan.price}<span style={{ fontSize: "14px", color: "#6b7280", fontWeight: "400" }}>{plan.period}</span>
+                </div>
+                <div style={{ color: "#6b7280", fontSize: "13px", marginBottom: "24px" }}>{plan.credits}</div>
+                <button style={{
+                  width: "100%", padding: "11px", borderRadius: "10px",
+                  background: plan.highlight ? "linear-gradient(135deg, #2563eb, #7c3aed)" : "#ffffff0d",
+                  color: "#fff", border: "none", fontWeight: "700", fontSize: "13px",
+                  cursor: "pointer", fontFamily: "inherit"
+                }}>
+                  {plan.cta}
+                </button>
               </div>
             ))}
           </div>
-          <p style={{ color: "#6b7280", fontSize: "12px" }}>Starter includes 7-day free trial. Pro is month-to-month, cancel anytime.</p>
+
+          {/* USDT Payment Section */}
+          <div style={{ background: "#0d1a0d", border: "1px solid #22c55e30", borderRadius: "16px", padding: "24px", marginBottom: "20px", textAlign: "left" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+              <span style={{ fontSize: "20px" }}>₮</span>
+              <span style={{ fontWeight: "800", fontSize: "15px", color: "#22c55e" }}>Pay with USDT (TRC20)</span>
+              <span style={{ fontSize: "10px", background: "#22c55e20", color: "#22c55e", border: "1px solid #22c55e30", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Mono'" }}>RECOMMENDED</span>
+            </div>
+            <p style={{ fontSize: "13px", color: "#6b7280", marginBottom: "16px", lineHeight: 1.6 }}>
+              Send USDT on the <strong style={{ color: "#e8e8f0" }}>TRON (TRC20)</strong> network to the address below. Then email us your transaction ID to activate your account.
+            </p>
+
+            {/* Steps */}
+            {[
+              "Open Binance or any crypto wallet",
+              "Send $9 (Starter) or $19 (Pro) in USDT",
+              "Select TRC20 network",
+              "Paste the wallet address below",
+              "Email your TX ID to: pitchforge@gmail.com"
+            ].map((s, i) => (
+              <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "8px", alignItems: "flex-start" }}>
+                <div style={{ minWidth: "18px", height: "18px", background: "#22c55e", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "700", color: "#000", flexShrink: 0 }}>{i + 1}</div>
+                <span style={{ fontSize: "12px", color: "#c4c8d8", lineHeight: 1.5 }}>{s}</span>
+              </div>
+            ))}
+
+            {/* Wallet address */}
+            <div style={{ marginTop: "16px", background: "#000", border: "1px solid #22c55e40", borderRadius: "10px", padding: "14px" }}>
+              <div style={{ fontSize: "10px", color: "#6b7280", fontFamily: "'DM Mono'", letterSpacing: "1px", marginBottom: "6px" }}>USDT TRC20 WALLET ADDRESS</div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
+                <code style={{ fontSize: "11px", color: "#22c55e", fontFamily: "'DM Mono'", wordBreak: "break-all" }}>TUY6KhFdgP3CFP7vFH3ejYdD9tLrVBU764</code>
+                <button
+                  onClick={() => { navigator.clipboard.writeText("TUY6KhFdgP3CFP7vFH3ejYdD9tLrVBU764"); alert("Address copied!"); }}
+                  style={{ background: "#22c55e20", border: "1px solid #22c55e40", borderRadius: "6px", padding: "5px 12px", fontSize: "11px", color: "#22c55e", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <p style={{ fontSize: "11px", color: "#4b5563", marginTop: "12px" }}>
+              ⚠️ Only send USDT on TRC20 network. Sending on wrong network will result in loss of funds.
+            </p>
+          </div>
+
+          {/* Payoneer Payment Section */}
+          <div style={{ background: "#0d0f18", border: "1px solid #3b82f630", borderRadius: "16px", padding: "24px", marginBottom: "16px", textAlign: "left" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+              <span style={{ fontSize: "20px" }}>💳</span>
+              <span style={{ fontWeight: "800", fontSize: "15px", color: "#60a5fa" }}>Pay via Payoneer</span>
+            </div>
+            <p style={{ fontSize: "13px", color: "#6b7280", marginBottom: "16px", lineHeight: 1.6 }}>
+              Send your payment directly to our Payoneer account. Works from any country, any bank or card.
+            </p>
+            {[
+              "Log in or sign up at payoneer.com",
+              "Click 'Pay' or 'Send Payment'",
+              "Send $9 (Starter) or $19 (Pro)",
+              "Pay to email: Jad_sa3da2002@hotmail.com",
+              "Email your receipt to pitchforge@gmail.com to activate"
+            ].map((s, i) => (
+              <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "8px", alignItems: "flex-start" }}>
+                <div style={{ minWidth: "18px", height: "18px", background: "#3b82f6", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", fontWeight: "700", color: "#fff", flexShrink: 0 }}>{i + 1}</div>
+                <span style={{ fontSize: "12px", color: "#c4c8d8", lineHeight: 1.5 }}>{s}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: "16px", background: "#080a10", border: "1px solid #3b82f630", borderRadius: "10px", padding: "14px" }}>
+              <div style={{ fontSize: "10px", color: "#6b7280", fontFamily: "'DM Mono'", letterSpacing: "1px", marginBottom: "6px" }}>PAYONEER EMAIL</div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
+                <code style={{ fontSize: "12px", color: "#60a5fa", fontFamily: "'DM Mono'" }}>Jad_sa3da2002@hotmail.com</code>
+                <button onClick={() => { navigator.clipboard.writeText("Jad_sa3da2002@hotmail.com"); alert("Email copied!"); }} style={{ background: "#3b82f620", border: "1px solid #3b82f640", borderRadius: "6px", padding: "5px 12px", fontSize: "11px", color: "#60a5fa", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <p style={{ color: "#374151", fontSize: "12px" }}>No credit card required · Cancel anytime · Payments processed within 24hrs</p>
         </div>
       )}
+
+      {/* PAYWALL MODAL */}
+      {showPaywall && (
+        <div style={{ position: "fixed", inset: 0, background: "#000000cc", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: "20px" }} onClick={() => setShowPaywall(false)}>
+          <div style={{ background: "#0d0f18", border: "1px solid #7c3aed40", borderRadius: "20px", padding: "36px", maxWidth: "420px", width: "100%", textAlign: "center", animation: "fadeUp 0.3s ease" }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔒</div>
+            <h3 style={{ fontWeight: "800", fontSize: "22px", marginBottom: "8px", letterSpacing: "-0.5px" }}>You've used all 3 free pitches</h3>
+            <p style={{ color: "#6b7280", fontSize: "14px", lineHeight: 1.7, marginBottom: "24px" }}>
+              Upgrade to get unlimited pitch generation and start closing more clients today.
+            </p>
+            <button
+              onClick={() => { setShowPaywall(false); setPage("pricing"); }}
+              style={{ width: "100%", padding: "14px", background: "linear-gradient(135deg, #2563eb, #7c3aed)", color: "#fff", border: "none", borderRadius: "12px", fontWeight: "800", fontSize: "15px", cursor: "pointer", fontFamily: "inherit", marginBottom: "10px" }}
+            >
+              See Plans — from $9/mo →
+            </button>
+            <button onClick={() => setShowPaywall(false)} style={{ background: "none", border: "none", color: "#6b7280", fontSize: "13px", cursor: "pointer", fontFamily: "inherit" }}>Maybe later</button>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer style={{ borderTop: "1px solid #ffffff08", padding: "20px", textAlign: "center", marginTop: "40px" }}>
+        <p style={{ color: "#374151", fontSize: "11px", fontFamily: "'DM Mono'" }}>
+          ⚡ PITCHFORGE · BUILT WITH CLAUDE AI · © 2026
+        </p>
+      </footer>
     </div>
   );
 }
